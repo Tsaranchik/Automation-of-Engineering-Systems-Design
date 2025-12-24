@@ -10,19 +10,14 @@
 #define BUTTON_PIN_2		GPIO_NUM_5
 
 #define DEBOUNCE_TIME_MS 	50
-#define PRESSED_STASE 		0
 
 static QueueHandle_t gpio_evt_queue = NULL;
 static volatile uint32_t last_press_time1 = 0;
 static volatile uint32_t last_press_time2 = 0;
 static bool led_state = false;
 
-static volatile uint32_t btn1_last_state = 1;
-static volatile uint32_t btn2_last_state = 2;
-
 typedef struct {
 	uint32_t pin;
-	bool is_pressed;
 } button_event_t;
 
 static void IRAM_ATTR gpio_isr_handler(void* arg)
@@ -33,27 +28,19 @@ static void IRAM_ATTR gpio_isr_handler(void* arg)
 	if (gpio_num == BUTTON_PIN_1) {
 		if (now - last_press_time1 < DEBOUNCE_TIME_MS) return;
 
-		gpio_set_intr_type(BUTTON_PIN_1, GPIO_INTR_DISABLE);
-		gpio_set_intr_type(BUTTON_PIN_1, GPIO_INTR_NEGEDGE);
-
 		last_press_time1 = now;
 
 		button_event_t evt = {
-			.pin = gpio_num,
-			.is_pressed = true
+			.pin = gpio_num
 		};
 		xQueueSendFromISR(gpio_evt_queue, &evt, NULL);
 	} else if (gpio_num == BUTTON_PIN_2) {
 		if (now - last_press_time2 < DEBOUNCE_TIME_MS) return;
 
-		gpio_set_intr_type(BUTTON_PIN_2, GPIO_INTR_DISABLE);
-		gpio_set_intr_type(BUTTON_PIN_2, GPIO_INTR_NEGEDGE);
-
 		last_press_time2 = now;
 
 		button_event_t evt = {
-			.pin = gpio_num,
-			.is_pressed = true
+			.pin = gpio_num
 		};
 		xQueueSendFromISR(gpio_evt_queue, &evt, NULL);
 	}
@@ -65,11 +52,11 @@ static void button_task(void* arg)
 	
 	while(1) {
 		if (xQueueReceive(gpio_evt_queue, &evt, portMAX_DELAY)) {
-			if (evt.pin == BUTTON_PIN_1 && evt.is_pressed) {
+			if (evt.pin == BUTTON_PIN_1) {
 				printf("BUTTON 1\n");
 				led_state = true;
 				gpio_set_level(LED_PIN, led_state);
-			} else if (evt.pin == BUTTON_PIN_2 && evt.is_pressed) {
+			} else if (evt.pin == BUTTON_PIN_2) {
 				printf("BUTTON 2\n");
 				led_state = false;
 				gpio_set_level(LED_PIN, led_state);
