@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "author": "Владимир Ведин",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "board-esp32-h2-devkitm-1", "id": "esp", "top": 0, "left": 0, "attrs": {} },
+    {
+      "type": "wokwi-ky-040",
+      "id": "encoder1",
+      "top": -25.8,
+      "left": -200.3,
+      "rotate": 90,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-stepper-motor",
+      "id": "stepper1",
+      "top": -130.79,
+      "left": 125.23,
+      "attrs": { "size": "17" }
+    }
+  ],
+  "connections": [
+    [ "esp:TX", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX", "$serialMonitor:TX", "", [] ],
+    [ "encoder1:GND", "esp:GND.2", "black", [ "h-0.8", "v93.77" ] ],
+    [ "encoder1:VCC", "esp:5V", "red", [ "h-0.4", "v84.17" ] ],
+    [ "encoder1:CLK", "esp:2", "gold", [ "h0" ] ],
+    [ "encoder1:DT", "esp:3", "gold", [ "v9.6", "h120.2" ] ],
+    [ "encoder1:SW", "esp:13", "gold", [ "v19.2", "h129.8" ] ],
+    [ "stepper1:A-", "esp:10", "gold", [ "v0" ] ],
+    [ "stepper1:A+", "esp:11", "gold", [ "v0" ] ],
+    [ "stepper1:B+", "esp:25", "gold", [ "v0" ] ],
+    [ "stepper1:B-", "esp:12", "gold", [ "v0" ] ]
+  ],
+  "dependencies": {}
+}
